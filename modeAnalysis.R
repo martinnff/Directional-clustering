@@ -5,37 +5,29 @@ library(ggplot2)
 library(circular)
 
 set.seed(1)
-x=rcircmix(500,model=20) # 250
-n=50
-sample1=rvonmises(n, mu=circular(pi/2), kappa=3)
+x=rcircmix(100,model=12) # 250
 
 
-
-sample2=rvonmises(n, m=circular(pi/2+(2/6+2/6)*pi), k=3)
-
-
-
-x=c(sample1,sample2)
 x=as.circular(x)
 pdf('density_circ.pdf')
 d<-NPCirc::kern.den.circ(x, t=NULL, bw=bw.CV(x), from=circular(0), to=circular(2*pi), len=500)
 plot(d,main='',xlab='',ylab='',xlim=c(-1.2,1.2),ylim=c(-1.2,1.2))
 points.circular(x)
 dev.off()
-# diagrama e modas nunha función
+
 
 # argumentos:
-## x = mostra
-## len.grid = tamaño da grella empleada para estimar a densidade
-## bw = parametro de concentración
-## plot.mode T/F
-## plot.tree T/F
+## x = directional sample
+## len.grid = grid steps number
+## bw = concentration parameter
+## plot.mode (bool)
+## plot.tree (bool)
 
 # Saidas:
-## Gráficos
-## tau que identifica os cluster-cores
-## densidade estimada
-## número de grupos
+## Grafics
+## theshold tau to identify the core-clusters
+## kernel density estimation
+## number of groups
 
 
 
@@ -46,8 +38,7 @@ modeAnalysis <- function(x,bw=NULL,plot.mode=T,plot.tree=T,len.grid=1000){
   }
   y=NPCirc::kern.den.circ(x, t=NULL, bw=bw, from=circular(0), to=circular(2*pi), len=len.grid)
   f.est = y
-# conversión de densidade a pobabilidade
-# con probabilidade = probabilidade fora do punto de corte
+# density to probability conversion
   {
   t=c()
   for(i in 1:length(y$y)){
@@ -58,7 +49,7 @@ modeAnalysis <- function(x,bw=NULL,plot.mode=T,plot.tree=T,len.grid=1000){
   
 }
 
-# función de modas empíricas
+# Empirical mode function
   mod_e <-ggplot() + scale_x_continuous(name=expression(tau)) + 
     scale_y_continuous(name='Nº modes')
   {
@@ -90,7 +81,7 @@ modeAnalysis <- function(x,bw=NULL,plot.mode=T,plot.tree=T,len.grid=1000){
 
 }
   
-# Diagrama de arbore
+# Tree diagram
   dens_plot <- ggplot() +
     scale_x_continuous(name = '', 
                        breaks = c(0,1,2,3,4,5,6),
@@ -140,7 +131,6 @@ modeAnalysis <- function(x,bw=NULL,plot.mode=T,plot.tree=T,len.grid=1000){
     leafs=dend[which(dend[,3]==1),]
     nodes=dend[which(dend[,3]==0),]
     grid=seq(0,1,length=nrow(dend))
-    # plot(0,0,xlim=c(0,2*pi),ylim=c(0,max(y$y)+max(y$y)/10))
     
     r=0
     while(r<(length(nodes)*2)){
