@@ -161,7 +161,7 @@ kernelClust <- function(x,f.est,tau, bw = NPCirc::bw.CV(x),K=NULL){
     K=round(length(unclasified)*1.5)
   }
 
-  plot_c <- ggplot() + scale_x_continuous(name = '', 
+  plot_c <- ggplot2::ggplot() + ggplot2::scale_x_continuous(name = '', 
                                           breaks = c(0,pi/2,pi,3*pi/2),
                                           labels = c("0",expression(pi/2),
                                                      expression(pi),
@@ -251,18 +251,18 @@ kernelClust <- function(x,f.est,tau, bw = NPCirc::bw.CV(x),K=NULL){
     }
     points<-data.frame(rad=circular(unclasified),
                        h=rep(2,length(unclasified)))
-    plot_c <- plot_c + aes(x=rad,y=h) +
+    plot_c <- plot_c + ggplot2::aes(x=rad,y=h) +
       
-      geom_point(data = points,
+      ggplot2::geom_point(data = points,
                  colour='black',
                  alpha = 6/10) +
       
-      scale_y_continuous(name="",
+      ggplot2::scale_y_continuous(name="",
                          breaks=c(0,1,2),
                          labels=c('','',''),
                          limits=c(0, 2.2)) + 
       
-      coord_polar(theta='x',
+      ggplot2::coord_polar(theta='x',
                   start =3/2*pi,
                   direction=-1) 
     

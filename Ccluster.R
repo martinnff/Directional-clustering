@@ -11,13 +11,16 @@
 
 Ccluster <- function(x,h=NULL,grid_length=50,cut=1E-4){
   
-  dens_plot <- ggplot() + scale_x_continuous(name = '', 
+  dens_plot <- ggplot2::ggplot() + ggplot2::scale_x_continuous(name = '', 
                                              breaks = c(0,3*pi/2,pi,pi/2),
                                              labels = c("0",expression(pi/2),expression(pi),expression(3*pi/2))) 
   
   
   eje_bw=data.frame(rad=c(0+pi/4,pi/2+pi/4,pi+pi/4,3*pi/2+pi/4),
-                    h=c(1/bw.rt(x), bw.CV(x,upper=100), bw.pi(x), 1/bw.boot(x)),
+                    h=c(1/NPCirc::bw.rt(x),
+                        NPCirc::bw.CV(x,upper=100), 
+                        NPCirc::bw.pi(x), 
+                        1/NPCirc::bw.boot(x)),
                     name=c("bw.rt", "bw.CV", "bw.pi", "bw.boot"))
   
   if(is.null(h)){
@@ -48,7 +51,7 @@ Ccluster <- function(x,h=NULL,grid_length=50,cut=1E-4){
   for(i in seq_len(length(bw.l))){
     
     
-    y=kern.den.circ(x, t=NULL, bw=bw.l[i], from=circular(0), to=circular(2*pi), len=250)
+    y=NPCirc::kern.den.circ(x, t=NULL, bw=bw.l[i], from=circular(0), to=circular(2*pi), len=250)
     i=sort(bw.l)[i]
     dx=y$x;dy=y$y
     
@@ -82,24 +85,30 @@ Ccluster <- function(x,h=NULL,grid_length=50,cut=1E-4){
     
   }
   dens_plot <- dens_plot +
-    geom_point(aes(x=points$x,y=rep(max(bw.l)+(max(bw.l)/20),length(points$x))) ,shape=16, colour = 1, size = 2,na.rm = T)
+    ggplot2::geom_point(aes(x=points$x,
+                            y=rep(max(bw.l)+(max(bw.l)/20),
+                            length(points$x))),
+                        shape=16, 
+                        colour = 1, 
+                        size = 2,
+                        na.rm = T)
   
-  dens_plot <- dens_plot + geom_text(data=eje_bw,
+  dens_plot <- dens_plot + ggplot2::geom_text(data=eje_bw,
                                      label=c("bw.rt", "bw.CV", "bw.pi", "bw.boot"),
                                      check_overlap = F,
                                      color='black'
   ) + 
-    geom_text(data=eje,
+    ggplot2::geom_text(data=eje,
               label=as.character(round(seq(0,max(bw.l),by=eje_by)))[-1],
               check_overlap = F,
               color='white'
     ) +
-    scale_y_continuous(name="",
+    ggplot2::scale_y_continuous(name="",
                        breaks=round(seq(0,max(bw.l),length=5)),
                        labels=rep('',length=5),
                        limits=c(min(bw.l)-max(bw.l)/4.2, max(bw.l)+(max(bw.l)/15))) +
     
-    coord_polar(theta='x',start=pi/2)
+    ggplot2::coord_polar(theta='x',start=pi/2)
   
   
   

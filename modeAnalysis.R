@@ -1,18 +1,20 @@
 #library(HDiR)
-library(NPCirc)
-library(pdfCluster)
-library(ggplot2)
-library(circular)
+
 
 set.seed(1)
-x=rcircmix(100,model=12) # 250
+x=NPCirc::rcircmix(100,model=12) # 250
 
 
-x=as.circular(x)
+x=circular::circular(x)
 pdf('density_circ.pdf')
-d<-NPCirc::kern.den.circ(x, t=NULL, bw=bw.CV(x), from=circular(0), to=circular(2*pi), len=500)
+d<-NPCirc::kern.den.circ(x, 
+                         t=NULL, 
+                         bw=NPCirc::bw.CV(x), 
+                         from=circular::circular(0), 
+                         to=circular::circular(2*pi), 
+                         len=500)
 plot(d,main='',xlab='',ylab='',xlim=c(-1.2,1.2),ylim=c(-1.2,1.2))
-points.circular(x)
+circular::points.circular(x)
 dev.off()
 
 
@@ -36,7 +38,12 @@ modeAnalysis <- function(x,bw=NULL,plot.mode=T,plot.tree=T,len.grid=1000){
   if(is.null(bw)){
     bw=NPCirc::bw.CV(x)
   }
-  y=NPCirc::kern.den.circ(x, t=NULL, bw=bw, from=circular(0), to=circular(2*pi), len=len.grid)
+  y=NPCirc::kern.den.circ(x,
+                          t=NULL,
+                          bw=bw, 
+                          from=circular::circular(0),
+                          to=circular::circular(2*pi),
+                          len=len.grid)
   f.est = y
 # density to probability conversion
   {
@@ -50,15 +57,16 @@ modeAnalysis <- function(x,bw=NULL,plot.mode=T,plot.tree=T,len.grid=1000){
 }
 
 # Empirical mode function
-  mod_e <-ggplot() + scale_x_continuous(name=expression(tau)) + 
-    scale_y_continuous(name='Nº modes')
+  mod_e <-ggplot2::ggplot() + 
+    ggplot2::scale_x_continuous(name=expression(tau)) + 
+    ggplot2::scale_y_continuous(name='Nº modes')
   {
-  modes<-c()
+  modes=0
   cuts<-sort(y$y)
-  for(i in 1:length(y$y)){
+  for(i in seq_len(length(y$y))){
     cuts_y=0
     last=y$y[1]>=cuts[i]
-    for(j in c(1:length(y$y))){
+    for(j in seq_len(length(y$y))){
       actual=0
       if(y$y[j]>=cuts[i]){
         actual=T
@@ -75,26 +83,25 @@ modeAnalysis <- function(x,bw=NULL,plot.mode=T,plot.tree=T,len.grid=1000){
   }
   modes=modes/2
   datos<-data.frame(x=sort(y$y),y=modes)
-  mod_e <- mod_e + aes(x=x,y=y) +
-    geom_line(data = datos) 
+  mod_e <- mod_e + ggplot2::aes(x=x,y=y) +
+    ggplot2::geom_line(data = datos) 
   t=max(cuts[which(modes==max(modes))])
 
 }
   
 # Tree diagram
-  dens_plot <- ggplot() +
-    scale_x_continuous(name = '', 
+  dens_plot <- ggplot2::ggplot() +
+    ggplot2::scale_x_continuous(name = '', 
                        breaks = c(0,1,2,3,4,5,6),
                        labels = rep('',7)) +
-    scale_y_continuous(name = expression(tau))
+    ggplot2::scale_y_continuous(name = expression(tau))
   {
     
     xc=c()
     yc=c()
     m=c()
     last=y$y[1]
-    for(i in c(1:(length(y$x)-1),1:20)){
-      
+    for(i in c(seq_len(length(y$x)-1),1:20)){
       if((y$y[i] < last ) & (y$y[i] < y$y[i+1])){
         xc=c(xc,y$x[i])
         yc=c(yc,y$y[i])
@@ -120,7 +127,7 @@ modeAnalysis <- function(x,bw=NULL,plot.mode=T,plot.tree=T,len.grid=1000){
     dend=unique(dend)
     
     xmin=dend[which.max(dend[,2]),1]
-    for(i in 1:nrow(dend)){
+    for(i in seq_len(nrow(dend))){
       
       if(dend[i,1]<xmin){
         dend[i,1]=2*pi-(xmin-dend[i,1])
@@ -136,7 +143,7 @@ modeAnalysis <- function(x,bw=NULL,plot.mode=T,plot.tree=T,len.grid=1000){
     while(r<(length(nodes)*2)){
       r=r+1
       ai=0
-      for(i in 1:nrow(leafs)){
+      for(i in seq_len(nrow(leafs))){
         
         i=i-ai
         
@@ -144,8 +151,7 @@ modeAnalysis <- function(x,bw=NULL,plot.mode=T,plot.tree=T,len.grid=1000){
           break
         }
         
-        for(j in 1:nrow(nodes)){
-          
+        for(j in seq_len(nrow(nodes))){
           
           if((leafs[i,4]<=2 & nodes[j,4]<2)){
             if(leafs[i,1]>2*pi-xmin){
@@ -183,13 +189,13 @@ modeAnalysis <- function(x,bw=NULL,plot.mode=T,plot.tree=T,len.grid=1000){
                 y2=min(ys)
                 coords_h=data.frame(x=c(x1,x2),y=c(y1,y1))
                 coords_v=data.frame(x=c(x1,x1),y=c(y1,y2))
-                dens_plot <- dens_plot + aes(x=x,y=y) +
-                  geom_line(data = coords_h) +
-                  geom_line(data = coords_v)
+                dens_plot <- dens_plot + ggplot2::aes(x=x,y=y) +
+                  ggplot2::geom_line(data = coords_h) +
+                  ggplot2::geom_line(data = coords_v)
                 if(leafs[i,3]==1){
-                  dens_plot <- dens_plot +aes(x=x,y=y) +
-                    
-                    geom_text(data=leafs[i,]-c(0,0.02),
+                  dens_plot <- dens_plot +
+                    ggplot2::aes(x=x,y=y) +
+                    ggplot2::geom_text(data=leafs[i,]-c(0,0.02),
                               label=as.character(i),
                               check_overlap = T
                     )
@@ -245,13 +251,17 @@ modeAnalysis <- function(x,bw=NULL,plot.mode=T,plot.tree=T,len.grid=1000){
 
     }
   if(plot.mode){
-  plot(mod_e + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-                                  panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+  plot(mod_e + ggplot2::theme_bw() + ggplot2::theme(panel.border = ggplot2::element_blank(), 
+                                                    panel.grid.major = ggplot2::element_blank(),
+                                  panel.grid.minor = ggplot2::element_blank(),
+                                  axis.line = ggplot2::element_line(colour = "black"))
   )
   }
   if(plot.tree){
-  plot(dens_plot + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-                                      panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+  plot(dens_plot + ggplot2::theme_bw() + ggplot2::theme(panel.border = ggplot2::element_blank(), 
+                                               panel.grid.major = ggplot2::element_blank(),
+                                      panel.grid.minor = ggplot2::element_blank(), 
+                                      axis.line = ggplot2::element_line(colour = "black"))
   )
   }
   out=list()
