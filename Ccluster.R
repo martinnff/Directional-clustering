@@ -45,7 +45,7 @@ Ccluster <- function(x,h=NULL,grid_length=50,cut=1E-4){
   points2=data.frame(matrix(ncol=3))
   colnames(points1)<-c('rad','h','f')
   colnames(points2)<-c('rad','h','f')
-  for(i in 1:length(bw.l)){
+  for(i in seq_len(length(bw.l))){
     
     
     y=kern.den.circ(x, t=NULL, bw=bw.l[i], from=circular(0), to=circular(2*pi), len=250)
@@ -53,7 +53,7 @@ Ccluster <- function(x,h=NULL,grid_length=50,cut=1E-4){
     dx=y$x;dy=y$y
     
     
-    for(j in 1:length(dx)){
+    for(j in seq_len(length(dx))){
       
       if(dy[j]>cut){
         count1=count1+1
