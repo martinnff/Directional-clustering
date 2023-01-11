@@ -47,8 +47,8 @@ modeAnalysis <- function(x,bw=NULL,plot.mode=T,plot.tree=T,len.grid=1000){
   f.est = y
 # density to probability conversion
   {
-  t=c()
-  for(i in 1:length(y$y)){
+  t=0
+  for(i in seq_len(length(y$y))){
     l=y$y[which(y$y>y$y[i])]
     t[i]=length(l)/length(y$y)
   }
@@ -97,9 +97,9 @@ modeAnalysis <- function(x,bw=NULL,plot.mode=T,plot.tree=T,len.grid=1000){
     ggplot2::scale_y_continuous(name = expression(tau))
   {
     
-    xc=c()
-    yc=c()
-    m=c()
+    xc=0
+    yc=0
+    m=0
     last=y$y[1]
     for(i in c(seq_len(length(y$x)-1),1:20)){
       if((y$y[i] < last ) & (y$y[i] < y$y[i+1])){
@@ -228,9 +228,9 @@ modeAnalysis <- function(x,bw=NULL,plot.mode=T,plot.tree=T,len.grid=1000){
       leafs=leafs[-which(leafs[,4]==3),]
       leafs=rbind(leafs[which(leafs[,4]>=1),],nodes[which(nodes[,4]>=1),])
       nodes=nodes[which(nodes[,4]<=1),]
-      ind=c()
+      ind=0
       count=0
-      for(i in 1:nrow(leafs)){
+      for(i in seq_len(nrow(leafs))){
         
         if(any(leafs[i,1]==leafs[-i,1])){
           count=count+1
