@@ -27,14 +27,14 @@ kernelClust <- function(x,f.est,tau, bw = NPCirc::bw.CV(x),K=NULL){
   {
     ind<-which.min(y$y)
     xmin<-y$x[ind]
-    for(i in 1:length(y$x)){
+    for(i in seq_len(length(y$x))){
       if(y$x[i]<xmin){
         y$x[i]=2*pi-(xmin-y$x[i])
       }else{
         y$x[i]=y$x[i]-xmin
       }
     }
-    for(i in 1:length(x)){
+    for(i in seq_len(length(x))){
       if(x[i]<xmin){
         x[i]=2*pi-(xmin-x[i])
       }else{
@@ -45,8 +45,8 @@ kernelClust <- function(x,f.est,tau, bw = NPCirc::bw.CV(x),K=NULL){
   
   # paso de densidade a probabilidade
   {
-    t=c()
-    for(i in 1:length(y$y)){
+    t=0
+    for(i in seq_len(length(y$y))){
       l=y$y[which(y$y<=y$y[i])]
       t[i]=length(l)/length(y$y)
     }
@@ -60,7 +60,7 @@ kernelClust <- function(x,f.est,tau, bw = NPCirc::bw.CV(x),K=NULL){
     x<-sort(x)
     t=round(1-tau,3)
     groups=list()
-    clasified_ix<-c()
+    clasified_ix=0
     group=data.frame(matrix(ncol=3))
     count1=0
     count2=0
@@ -69,7 +69,7 @@ kernelClust <- function(x,f.est,tau, bw = NPCirc::bw.CV(x),K=NULL){
     y$y<-y$y[indx]
     last=y$y[1]>t
     
-    for(i in 1:length(x)){
+    for(i in seq_len(length(x))){
       
       index=(x[i]%/%((2*pi)/length(y$y)))+1
       if(i>1){
@@ -124,16 +124,16 @@ kernelClust <- function(x,f.est,tau, bw = NPCirc::bw.CV(x),K=NULL){
       }
     }
     
-    m<-c()
-    for(i in 1:length(groups)){
+    m=0
+    for(i in seq_len(length(groups))){
       m[i]<-max(groups[[i]][[2]])
     }
     ind<-order(m,decreasing=T)
     count=0
     
     {
-      for(j in 1:length(groups)){
-        for(k in 1:length(groups[[j]][[1]])){
+      for(j in seq_len(length(groups))){
+        for(k in seq_len(length(groups[[j]][[1]]))){
           if(groups[[j]][[1]][[k]]>(2*pi-xmin)){
             groups[[j]][[1]][[k]]=groups[[j]][[1]][[k]]-(2*pi-xmin)
           }else{
@@ -142,7 +142,7 @@ kernelClust <- function(x,f.est,tau, bw = NPCirc::bw.CV(x),K=NULL){
         }
       }
       
-      for(k in 1:length(x)){
+      for(k in seq_len(length(x))){
         if(x[k]>(2*pi-xmin)){
           x[k]=x[k]-(2*pi-xmin)
         }else{
@@ -174,7 +174,7 @@ kernelClust <- function(x,f.est,tau, bw = NPCirc::bw.CV(x),K=NULL){
     for(r in 1:K){
  
       dens_m<-list()
-      for(i in 1:length(groups)){
+      for(i in seq_len(length(groups))){
         dens_m[[i]]<-NPCirc::kern.den.circ(circular(groups[[i]][[1]]), 
                                    t=NULL, bw=bw, 
                                    from=circular(0), 
@@ -183,10 +183,10 @@ kernelClust <- function(x,f.est,tau, bw = NPCirc::bw.CV(x),K=NULL){
       }
       log_ratios_k=data.frame(matrix(ncol=length(unclasified),
                                      nrow=length(groups)))
-      for(k in 1:length(unclasified)){
+      for(k in seq_len(length(unclasified))){
         
         count=0
-        log_ratios<-c()
+        log_ratios=0
         for(i in 1:length(groups)){
           
           
@@ -194,7 +194,7 @@ kernelClust <- function(x,f.est,tau, bw = NPCirc::bw.CV(x),K=NULL){
           ind<-unclasified[k]%/%((2*pi)/length(dens_m[[i]]$x))+1
 
           l_m<-dens_m[[i]]$y[ind]
-          l_d=c()
+          l_d=0
           for(s in 1:length(groups)){
             l_d<-c(l_d, dens_m[[s]]$y[ind])
           }
@@ -228,8 +228,8 @@ kernelClust <- function(x,f.est,tau, bw = NPCirc::bw.CV(x),K=NULL){
     }
     }
     }
-    m<-c()
-    for(i in 1:length(groups)){
+    m=0
+    for(i in seq_len(length(groups))){
       m[i]<-max(groups[[i]][[2]])
     }
     ind<-order(m,decreasing=T)
@@ -269,7 +269,7 @@ kernelClust <- function(x,f.est,tau, bw = NPCirc::bw.CV(x),K=NULL){
     df<-data.frame(matrix(ncol=3))
     colnames(df)=rep('',3)
 
-    for(g in 1:length(groups)){
+    for(g in seq_len(length(groups))){
       colnames(groups[[g]])=rep('',3)
       df<- rbind(df,groups[[g]])
     }
