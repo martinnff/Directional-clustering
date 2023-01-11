@@ -187,7 +187,7 @@ kernelClust <- function(x,f.est,tau, bw = NPCirc::bw.CV(x),K=NULL){
         
         count=0
         log_ratios=0
-        for(i in 1:length(groups)){
+        for(i in seq_len(length(groups))){
           
           
           count=count+1
@@ -195,7 +195,7 @@ kernelClust <- function(x,f.est,tau, bw = NPCirc::bw.CV(x),K=NULL){
 
           l_m<-dens_m[[i]]$y[ind]
           l_d=0
-          for(s in 1:length(groups)){
+          for(s in seq_len(length(groups))){
             l_d<-c(l_d, dens_m[[s]]$y[ind])
           }
           l_d<-l_d[-i]
